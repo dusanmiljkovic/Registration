@@ -22,8 +22,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Registration.Domain\Registration.Domain.csproj" />
     <ProjectReference Include="..\Registration.Persistence\Registration.Persistence.csproj" />
+    <ProjectReference Include="..\Registration.Services\Registration.Services.csproj" />
   </ItemGroup>
 
 </Project>

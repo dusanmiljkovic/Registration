@@ -1,12 +1,11 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Registration.Api.Services.Users;
 using Registration.Domain.Entities.Companies;
 using Registration.Domain.Entities.Users;
 using Registration.Domain.Interfaces;
 using Registration.Persistence;
 using Registration.Persistence.Data;
 using Registration.Persistence.Repositories;
-using Registration.Persistence.Repositories.Common;
+using Registration.Services.Users;
 
 namespace Registration.Api.Extensions;
 public static class ServiceCollectionExtensions

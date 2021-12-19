@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Registration.Api.DTOs.Users;
-using Registration.Api.Services.Users;
+using Registration.Services.DTOs.Users;
+using Registration.Services.Users;
 
 namespace Registration.Api.Controllers;
 
@@ -21,6 +21,8 @@ public class UserController : ControllerBase
     }
 
     [HttpGet("{userId}")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> GetUser(long userId)
     {
         var user = await _service.GetUser(userId);
@@ -28,11 +30,14 @@ public class UserController : ControllerBase
     }
 
     [HttpPut("{userId}")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> UpdateUser(long userId, UpdateUserRequest updateUser)
     {
         if (userId != updateUser.UserId)
         {
-            return BadRequest();
+            return BadRequest("Ids don't match.");
         }
 
         await _service.UpdateUser(updateUser);
@@ -41,7 +46,6 @@ public class UserController : ControllerBase
 
     [HttpDelete("{userId}")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
-    [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> DeleteUser(long userId)
     {

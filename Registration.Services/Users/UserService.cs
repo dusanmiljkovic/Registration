@@ -1,15 +1,16 @@
-﻿using Registration.Api.DTOs.Users;
-using Registration.Api.Exceptions;
-using Registration.Domain.Entities.Users;
+﻿using Registration.Domain.Entities.Users;
 using Registration.Domain.Interfaces;
+using Registration.Services.DTOs.Users;
+using Registration.Services.Exceptions;
 
-namespace Registration.Api.Services.Users;
+namespace Registration.Services.Users;
+
 public class UserService : BaseService
 {
     private readonly Serilog.ILogger _logger;
     private readonly IUnitOfWork _unitOfWork;
 
-    public UserService(Serilog.ILogger logger, IUnitOfWork unitOfWork) 
+    public UserService(Serilog.ILogger logger, IUnitOfWork unitOfWork)
         : base(logger, unitOfWork)
     {
         _logger = logger;
@@ -19,14 +20,15 @@ public class UserService : BaseService
     public async Task<GetUserResponse> GetUser(long userId)
     {
         User user = _unitOfWork.UserRepository.GetById(userId);
-       
+
         if (user is null)
         {
             _logger.Error("User with ID \"{Id}\" was not found.", userId);
             throw new NotFoundException($"User with ID \"{userId}\" was not found.");
         }
 
-        return new GetUserResponse {
+        return new GetUserResponse
+        {
             UserId = user.Id,
             Username = user.Username,
             CompanyId = user.CompanyId,
@@ -75,7 +77,7 @@ public class UserService : BaseService
         }
         catch (Exception)
         {
-            throw new NotFoundException($"[{nameof(UserService)}] Error occured while saving to the database.");
+            throw new InvalidStateException($"[{nameof(UserService)}] Error occured while saving to the database.");
         }
     }
 }

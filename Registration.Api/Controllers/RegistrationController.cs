@@ -1,5 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Registration.Api.Services.Users;
+using Registration.Services.Users;
 
 namespace Registration.Api.Controllers;
 

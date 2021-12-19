@@ -1,4 +1,4 @@
-﻿namespace Registration.Api.Exceptions;
+﻿namespace Registration.Services.Exceptions;
     public class NotFoundException : Exception
     {
         /// <summary>

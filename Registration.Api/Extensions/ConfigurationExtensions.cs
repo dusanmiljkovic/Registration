@@ -1,5 +1,4 @@
-﻿using Registration.Persistence.Data;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 
 namespace Registration.Api.Extensions;
 public static class ConfigurationExtensions

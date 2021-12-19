@@ -1,4 +1,4 @@
-﻿namespace Registration.Api.DTOs.Users;
+﻿namespace Registration.Services.DTOs.Users;
 
 public class GetUserRequest
 {
