@@ -64,10 +64,11 @@ namespace Registration.Persistence.Repositories.Common
         }
 
         /// <inheritdoc/>
-        public void Update(TEntity entityToUpdate)
+        public TEntity Update(TEntity entityToUpdate)
         {
             _dbSet.Attach(entityToUpdate);
             _context.Entry(entityToUpdate).State = EntityState.Modified;
+            return entityToUpdate;
         }
     }
 }

@@ -1,12 +1,10 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace Registration.Services.DTOs.Registration;
-
-public class RegisterRequest
+namespace Registration.Services.Users.Dto.Commands.UpdateUser;
+public class UpdateUserCommand
 {
     [Required]
-    [StringLength(50)]
-    public string CompanyName { get; set; }
+    public long UserId { get; set; }
 
     [Required]
     [StringLength(50)]

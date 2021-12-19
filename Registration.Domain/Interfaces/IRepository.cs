@@ -34,7 +34,7 @@ public interface IRepository<TEntity> where TEntity : BaseEntity
     /// Update existing entity.
     /// </summary>
     /// <param name="entity">Entity to update.</param>
-    void Update(TEntity entity);
+    TEntity Update(TEntity entity);
 
     /// <summary>
     /// Delete existing entity.

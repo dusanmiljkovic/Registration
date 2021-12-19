@@ -1,11 +1,14 @@
-﻿using Registration.Domain.Entities.Users;
+﻿﻿using Registration.Domain.Entities.Users;
 using Registration.Domain.Interfaces;
-using Registration.Services.DTOs.Users;
 using Registration.Services.Exceptions;
+using Registration.Services.Users.Contracts;
+using Registration.Services.Users.Dto.Commands.DeleteUser;
+using Registration.Services.Users.Dto.Commands.UpdateUser;
+using Registration.Services.Users.Dto.Queries.GetUser;
 
 namespace Registration.Services.Users;
 
-public class UserService : BaseService
+public class UserService : BaseService, IUserService
 {
     private readonly Serilog.ILogger _logger;
     private readonly IUnitOfWork _unitOfWork;
@@ -17,49 +20,58 @@ public class UserService : BaseService
         _unitOfWork = unitOfWork;
     }
 
-    public async Task<GetUserResponse> GetUser(long userId)
+    public async Task<GetUserCommandResponse> GetUser(GetUserCommand getUserCommand)
     {
-        User user = _unitOfWork.UserRepository.GetById(userId);
+        User user = _unitOfWork.UserRepository.GetById(getUserCommand.UserId);
 
         if (user is null)
         {
-            _logger.Error("User with ID \"{Id}\" was not found.", userId);
-            throw new NotFoundException($"User with ID \"{userId}\" was not found.");
+            _logger.Error("User with ID \"{Id}\" was not found.", getUserCommand.UserId);
+            throw new NotFoundException($"User with ID \"{getUserCommand.UserId}\" was not found.");
         }
 
-        return new GetUserResponse
+        var response = new GetUserCommandResponse
         {
             UserId = user.Id,
             Username = user.Username,
             CompanyId = user.CompanyId,
             Email = user.Email,
         };
+        return response;
     }
 
-    public async Task UpdateUser(UpdateUserRequest updateUserRequest)
+    public async Task<UpdateUserCommandResponse> UpdateUser(UpdateUserCommand updateUserCommand)
     {
-        User user = _unitOfWork.UserRepository.GetById(updateUserRequest.UserId);
+        var user = _unitOfWork.UserRepository.GetById(updateUserCommand.UserId);
 
         if (user is null)
         {
-            _logger.Error("User with ID \"{Id}\" was not found.", updateUserRequest.UserId);
-            throw new NotFoundException($"User with ID \"{updateUserRequest.UserId}\" was not found.");
+            _logger.Error("User with ID \"{Id}\" was not found.", updateUserCommand.UserId);
+            throw new NotFoundException($"User with ID \"{updateUserCommand.UserId}\" was not found.");
         }
 
-        user.Update(updateUserRequest.Username, updateUserRequest.Email, updateUserRequest.Password);
+        user.Update(updateUserCommand.Username, updateUserCommand.Email, updateUserCommand.Password);
 
-        _unitOfWork.UserRepository.Update(user);
+        var updatedUser = _unitOfWork.UserRepository.Update(user);
         await SaveChanges();
+
+        return new UpdateUserCommandResponse()
+        {
+            Username = user.Username,
+            Email = user.Email
+        };
     }
 
-    public async Task DeleteUser(long userId)
+    public async Task DeleteUser(DeleteUserCommand deleteUserCommand)
     {
-        var user = _unitOfWork.UserRepository.GetById(userId);
+        var user = _unitOfWork.UserRepository.GetById(deleteUserCommand.UserId);
         if (user is null)
         {
-            throw new NotFoundException($"User with ID \"{userId}\" was not found.");
+            _logger.Error("User with ID \"{Id}\" was not found.", deleteUserCommand.UserId);
+            throw new NotFoundException($"User with ID \"{deleteUserCommand.UserId}\" was not found.");
         }
-        _unitOfWork.UserRepository.RemoveById(userId);
+
+        _unitOfWork.UserRepository.RemoveById(deleteUserCommand.UserId);
 
         var usersList = _unitOfWork.UserRepository.Find(u => u.CompanyId == user.CompanyId).ToList();
         if (usersList.Count == 1)

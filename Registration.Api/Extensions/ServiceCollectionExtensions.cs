@@ -5,6 +5,7 @@ using Registration.Domain.Interfaces;
 using Registration.Persistence;
 using Registration.Persistence.Data;
 using Registration.Persistence.Repositories;
+using Registration.Services.Registration;
 using Registration.Services.Users;
 
 namespace Registration.Api.Extensions;
@@ -34,6 +35,7 @@ public static class ServiceCollectionExtensions
     public static IServiceCollection AddBusinessServices(this IServiceCollection services)
     {
         services.AddScoped<UserService>();
+        services.AddScoped<RegistrationService>();
         return services;
     }
 

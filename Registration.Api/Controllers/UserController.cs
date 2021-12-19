@@ -1,6 +1,10 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Registration.Services.DTOs.Users;
+using Registration.Api.Dtos.User;
+using Registration.Domain.Entities.Users;
 using Registration.Services.Users;
+using Registration.Services.Users.Dto.Commands.DeleteUser;
+using Registration.Services.Users.Dto.Commands.UpdateUser;
+using Registration.Services.Users.Dto.Queries.GetUser;
 
 namespace Registration.Api.Controllers;
 
@@ -25,23 +29,24 @@ public class UserController : ControllerBase
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> GetUser(long userId)
     {
-        var user = await _service.GetUser(userId);
+        GetUserCommand getUserCommand = new() { UserId = userId };
+        GetUserCommandResponse user = await _service.GetUser(getUserCommand);
         return Ok(user);
     }
 
     [HttpPut("{userId}")]
-    [ProducesResponseType(StatusCodes.Status204NoContent)]
-    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<IActionResult> UpdateUser(long userId, UpdateUserRequest updateUser)
+    public async Task<IActionResult> UpdateUser(long userId, UpdateUserRequest updateUserRequest)
     {
-        if (userId != updateUser.UserId)
-        {
-            return BadRequest("Ids don't match.");
-        }
-
-        await _service.UpdateUser(updateUser);
-        return NoContent();
+        UpdateUserCommand updateUserCommand = new() { 
+            UserId = userId, 
+            Email = updateUserRequest.Email,
+            Password = updateUserRequest.Password,
+            Username = updateUserRequest.Username
+        };
+        var updatedUser = await _service.UpdateUser(updateUserCommand);
+        return Ok(updatedUser);
     }
 
     [HttpDelete("{userId}")]
@@ -49,7 +54,8 @@ public class UserController : ControllerBase
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> DeleteUser(long userId)
     {
-        await _service.DeleteUser(userId);
+        DeleteUserCommand command = new() { UserId = userId };
+        await _service.DeleteUser(command);
         return NoContent();
     }
 }

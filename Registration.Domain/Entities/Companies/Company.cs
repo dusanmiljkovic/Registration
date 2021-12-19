@@ -6,7 +6,7 @@ namespace Registration.Domain.Entities.Companies;
 /// <summary>
 /// Represents the company domain model <seealso cref="BaseEntity"/>.
 /// </summary>
-public class Company : BaseEntity
+public partial class Company : BaseEntity
 {
     /// <summary>
     /// Gets or sets name.

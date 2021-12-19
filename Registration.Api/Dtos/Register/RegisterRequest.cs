@@ -1,10 +1,11 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace Registration.Services.DTOs.Users;
-public class UpdateUserRequest
+namespace Registration.Api.Dtos.Register;
+public class RegisterRequest
 {
     [Required]
-    public long UserId { get; set; }
+    [StringLength(50)]
+    public string CompanyName { get; set; }
 
     [Required]
     [StringLength(50)]
@@ -17,7 +18,4 @@ public class UpdateUserRequest
     [Required]
     [StringLength(50)]
     public string Email { get; set; }
-
-    [Required]
-    public long? CompanyId { get; set; }
 }
