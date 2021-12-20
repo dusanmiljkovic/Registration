@@ -21,7 +21,7 @@ public class UserController : ControllerBase
     private readonly UserService _service;
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="UserService"/> class.
+    /// Initializes a new instance of the <see cref="UserController"/> class.
     /// </summary>
     /// <param name="service">Provides user service instance.</param>
     public UserController(UserService service)
@@ -71,7 +71,7 @@ public class UserController : ControllerBase
     /// Delete user.
     /// </summary>
     /// <param name="userId">User id.</param>
-    /// <returns>Information if vehicle is deleted.</returns>
+    /// <returns>Information if user is deleted.</returns>
     [HttpDelete("{userId}")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
