@@ -3,7 +3,7 @@
 namespace Registration.Domain.Entities.Users;
 
 /// <summary>
-/// IUserRepository.
+/// The <see cref="User"/> repository.
 /// </summary>
 public interface IUserRepository : IRepository<User>
 {

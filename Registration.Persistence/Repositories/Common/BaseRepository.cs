@@ -5,71 +5,70 @@ using Microsoft.EntityFrameworkCore;
 using Registration.Persistence.Data;
 using Registration.Shared.Extensions;
 
-namespace Registration.Persistence.Repositories.Common
+namespace Registration.Persistence.Repositories.Common;
+
+/// <summary>
+/// BaseRepository class.
+/// </summary>
+/// <typeparam name="TEntity">Base entity type.</typeparam>
+public class BaseRepository<TEntity> : IRepository<TEntity> where TEntity : BaseEntity
 {
+    #region Fields
+
     /// <summary>
-    /// BaseRepository class.
+    /// Database context.
     /// </summary>
-    /// <typeparam name="TEntity">Generic entity type.</typeparam>
-    public class BaseRepository<TEntity> : IRepository<TEntity> where TEntity : BaseEntity
+    private readonly RegistrationContext _context;
+
+    /// <summary>
+    /// Generic database set.
+    /// </summary>
+    private readonly DbSet<TEntity> _dbSet;
+
+    #endregion
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="BaseRepository"/> class.
+    /// </summary>
+    public BaseRepository(RegistrationContext context)
     {
-        #region Fields
+        _context = context.NotNull(nameof(context));
+        _dbSet = context.Set<TEntity>();
+    }
 
-        /// <summary>
-        /// Database context.
-        /// </summary>
-        private readonly RegistrationContext _context;
+    /// <inheritdoc/>
+    public TEntity Add(TEntity entity)
+    {
+        return _dbSet.Add(entity).Entity;
+    }
 
-        /// <summary>
-        /// Generic database set.
-        /// </summary>
-        private readonly DbSet<TEntity> _dbSet;
+    /// <inheritdoc/>
+    public IEnumerable<TEntity> Find(Expression<Func<TEntity, bool>> predicate)
+    {
+        return _dbSet.Where(predicate);
+    }
 
-        #endregion
+    /// <inheritdoc/>
+    public TEntity? GetById(long id)
+    {
+        return _dbSet.Find(id);
+    }
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="BaseRepository"/> class.
-        /// </summary>
-        public BaseRepository(RegistrationContext context)
+    /// <inheritdoc/>
+    public void RemoveById(long id)
+    {
+        TEntity? entity = _dbSet.Find(id);
+        if (entity is not null)
         {
-            _context = context.NotNull(nameof(context));
-            _dbSet = context.Set<TEntity>();
+            _dbSet.Remove(entity);
         }
+    }
 
-        /// <inheritdoc/>
-        public TEntity Add(TEntity entity)
-        {
-            return _dbSet.Add(entity).Entity;
-        }
-
-        /// <inheritdoc/>
-        public IEnumerable<TEntity> Find(Expression<Func<TEntity, bool>> predicate)
-        {
-            return _dbSet.Where(predicate);
-        }
-
-        /// <inheritdoc/>
-        public TEntity? GetById(long id)
-        {
-            return _dbSet.Find(id);
-        }
-
-        /// <inheritdoc/>
-        public void RemoveById(long id)
-        {
-            TEntity? entity = _dbSet.Find(id);
-            if (entity is not null)
-            {
-                _dbSet.Remove(entity);
-            }
-        }
-
-        /// <inheritdoc/>
-        public TEntity Update(TEntity entityToUpdate)
-        {
-            _dbSet.Attach(entityToUpdate);
-            _context.Entry(entityToUpdate).State = EntityState.Modified;
-            return entityToUpdate;
-        }
+    /// <inheritdoc/>
+    public TEntity Update(TEntity entityToUpdate)
+    {
+        _dbSet.Attach(entityToUpdate);
+        _context.Entry(entityToUpdate).State = EntityState.Modified;
+        return entityToUpdate;
     }
 }

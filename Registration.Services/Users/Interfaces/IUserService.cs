@@ -12,19 +12,19 @@ public interface IUserService
     /// </summary>
     /// <param name="getUserCommand">The get <see cref="User"/> command.</param>
     /// <exception cref="ArgumentNullException">Thrown when <paramref name="getUserCommand"/> is not set.</exception>
-    Task<GetUserCommandResponse> GetUser(GetUserCommand getUserCommand);
+    Task<GetUserCommandResponse> GetUserAsync(GetUserCommand getUserCommand);
 
     /// <summary>
     /// Asynchronously updates the <see cref="User"/> record based on provided <paramref name="updateUserCommand"/>.
     /// </summary>
     /// <param name="updateUserCommand">The update <see cref="User"/> command.</param>
     /// <exception cref="ArgumentNullException">Thrown when <paramref name="updateUserCommand"/> is not set.</exception>
-    Task<UpdateUserCommandResponse> UpdateUser(UpdateUserCommand updateUserCommand);
+    Task<UpdateUserCommandResponse> UpdateUserAsync(UpdateUserCommand updateUserCommand);
 
     /// <summary>
     /// Asynchronously deletes the <see cref="User"/> record based on provided <paramref name="deleteUserCommand"/>.
     /// </summary>
     /// <param name="deleteUserCommand">The delete <see cref="User"/> command.</param>
     /// <exception cref="ArgumentNullException">Thrown when <paramref name="deleteUserCommand"/> is not set.</exception>
-    Task DeleteUser(DeleteUserCommand deleteUserCommand);
+    Task DeleteUserAsync(DeleteUserCommand deleteUserCommand);
 }

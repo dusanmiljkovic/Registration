@@ -30,7 +30,7 @@ public class RegistrationService : BaseService, IRegistrationService
     }
 
     /// <inheritdoc/>
-    public async Task<RegisterUserCommandResponse> RegisterUser(RegisterUserCommand registerUserCommand)
+    public async Task<RegisterUserCommandResponse> RegisterUserAsync(RegisterUserCommand registerUserCommand)
     {
         Guard.ThrowIfNull(registerUserCommand, nameof(registerUserCommand));
 

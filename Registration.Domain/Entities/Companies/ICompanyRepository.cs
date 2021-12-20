@@ -3,7 +3,7 @@
 namespace Registration.Domain.Entities.Companies;
 
 /// <summary>
-/// ICompanyRepository.
+/// The <see cref="Company"/> repository.
 /// </summary>
 public interface ICompanyRepository : IRepository<Company>
 {

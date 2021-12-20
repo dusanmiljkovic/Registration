@@ -13,5 +13,5 @@ public interface IRegistrationService
     /// </summary>
     /// <param name="registerUserCommand">Contains information for registering new user.</param>
     /// <exception cref="ArgumentNullException">Thrown when <paramref name="registerUserCommand"/> is not set.</exception>
-    Task<RegisterUserCommandResponse> RegisterUser(RegisterUserCommand registerUserCommand);
+    Task<RegisterUserCommandResponse> RegisterUserAsync(RegisterUserCommand registerUserCommand);
 }

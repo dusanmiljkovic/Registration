@@ -42,8 +42,6 @@ public class ErrorController : ControllerBase
             _logger.LogError(message);
             switch (exception)
             {
-                case InvalidStateException:
-                    return StatusCode(400, message);
                 case NotFoundException:
                     return StatusCode(404, message);
                 default:

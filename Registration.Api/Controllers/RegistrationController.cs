@@ -44,7 +44,7 @@ public class RegistrationController : ControllerBase
             Password = registerRequest.Password,
             Email = registerRequest.Email
         };
-        RegisterUserCommandResponse registeredUser = await _service.RegisterUser(registerUserCommand);
+        RegisterUserCommandResponse registeredUser = await _service.RegisterUserAsync(registerUserCommand);
         return Created("", registeredUser);
     }
 }

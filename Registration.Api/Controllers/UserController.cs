@@ -41,7 +41,7 @@ public class UserController : ControllerBase
     public async Task<IActionResult> GetUser(long userId)
     {
         GetUserCommand getUserCommand = new() { UserId = userId };
-        GetUserCommandResponse user = await _service.GetUser(getUserCommand);
+        GetUserCommandResponse user = await _service.GetUserAsync(getUserCommand);
         return Ok(user);
     }
 
@@ -63,7 +63,7 @@ public class UserController : ControllerBase
             Password = updateUserRequest.Password,
             Username = updateUserRequest.Username
         };
-        UpdateUserCommandResponse updatedUser = await _service.UpdateUser(updateUserCommand);
+        UpdateUserCommandResponse updatedUser = await _service.UpdateUserAsync(updateUserCommand);
         return Ok(updatedUser);
     }
 
@@ -79,7 +79,7 @@ public class UserController : ControllerBase
     public async Task<IActionResult> DeleteUser(long userId)
     {
         DeleteUserCommand command = new() { UserId = userId };
-        await _service.DeleteUser(command);
+        await _service.DeleteUserAsync(command);
         return NoContent();
     }
 }

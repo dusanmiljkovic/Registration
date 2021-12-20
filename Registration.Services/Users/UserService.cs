@@ -32,7 +32,7 @@ public class UserService : BaseService, IUserService
     }
 
     /// <inheritdoc/>
-    public async Task<GetUserCommandResponse> GetUser(GetUserCommand getUserCommand)
+    public async Task<GetUserCommandResponse> GetUserAsync(GetUserCommand getUserCommand)
     {
         Guard.ThrowIfNull(getUserCommand, nameof(getUserCommand));
 
@@ -55,7 +55,7 @@ public class UserService : BaseService, IUserService
     }
 
     /// <inheritdoc/>
-    public async Task<UpdateUserCommandResponse> UpdateUser(UpdateUserCommand updateUserCommand)
+    public async Task<UpdateUserCommandResponse> UpdateUserAsync(UpdateUserCommand updateUserCommand)
     {
         Guard.ThrowIfNull(updateUserCommand, nameof(updateUserCommand));
 
@@ -67,7 +67,7 @@ public class UserService : BaseService, IUserService
             throw new NotFoundException($"User with ID \"{updateUserCommand.UserId}\" was not found.");
         }
 
-        user.Update(updateUserCommand.Username, updateUserCommand.Email, updateUserCommand.Password);
+        user.Update(updateUserCommand.Username, updateUserCommand.Password, updateUserCommand.Email);
 
         _unitOfWork.UserRepository.Update(user);
         await _unitOfWork.SaveChangesAsync();
@@ -82,7 +82,7 @@ public class UserService : BaseService, IUserService
     }
 
     /// <inheritdoc/>
-    public async Task DeleteUser(DeleteUserCommand deleteUserCommand)
+    public async Task DeleteUserAsync(DeleteUserCommand deleteUserCommand)
     {
         Guard.ThrowIfNull(deleteUserCommand, nameof(deleteUserCommand));
 
