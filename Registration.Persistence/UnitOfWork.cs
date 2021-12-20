@@ -1,4 +1,5 @@
-﻿using Registration.Domain.Entities.Companies;
+﻿using Microsoft.EntityFrameworkCore;
+using Registration.Domain.Entities.Companies;
 using Registration.Domain.Entities.Users;
 using Registration.Domain.Interfaces;
 using Registration.Persistence.Data;
@@ -33,7 +34,23 @@ namespace Registration.Persistence
 
         public Task<int> SaveChangesAsync()
         {
-            return _context.SaveChangesAsync();
+            try
+            {
+                return _context.SaveChangesAsync();
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                throw;
+            }
+            catch (DbUpdateException)
+            {
+                throw;
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+
         }
 
         #endregion

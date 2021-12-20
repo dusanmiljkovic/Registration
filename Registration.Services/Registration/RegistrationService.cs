@@ -1,8 +1,7 @@
 ﻿using Registration.Domain.Entities.Companies;
 using Registration.Domain.Entities.Users;
 using Registration.Domain.Interfaces;
-using Registration.Services.Exceptions;
-using Registration.Services.Registration.Contracts;
+using Registration.Services.Registration.Interfaces;
 using Registration.Services.Registration.Dto.Commands.RegisterUser;
 
 namespace Registration.Services.Registration;
@@ -22,13 +21,9 @@ public class RegistrationService : BaseService, IRegistrationService
     {
         var user = new User(registerUserCommand.Username, registerUserCommand.Password, registerUserCommand.Email);
         var company = new Company(registerUserCommand.CompanyName);
-        var addedCompany = _unitOfWork.CompanyRepository.Add(company);
-        await SaveChanges();
-
-        user.AddCompany(addedCompany.Id);
-        var addedUser = _unitOfWork.UserRepository.Add(user);
-
-        await SaveChanges();
+        company.AddUser(user);
+        _unitOfWork.CompanyRepository.Add(company);
+        await _unitOfWork.SaveChangesAsync(); 
 
         return new RegisterUserCommandResponse()
         {
@@ -37,17 +32,5 @@ public class RegistrationService : BaseService, IRegistrationService
             Email = user.Email,
             Password = user.Password
         };
-    }
-
-    private async Task SaveChanges()
-    {
-        try
-        {
-            await _unitOfWork.SaveChangesAsync();
-        }
-        catch (Exception)
-        {
-            throw new InvalidStateException($"[{nameof(RegistrationService)}] Error occured while saving to the database.");
-        }
     }
 }

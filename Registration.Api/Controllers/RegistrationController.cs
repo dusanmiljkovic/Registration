@@ -2,7 +2,6 @@
 using Registration.Api.Dtos.Register;
 using Registration.Services.Registration;
 using Registration.Services.Registration.Dto.Commands.RegisterUser;
-using Registration.Services.Users;
 
 namespace Registration.Api.Controllers;
 

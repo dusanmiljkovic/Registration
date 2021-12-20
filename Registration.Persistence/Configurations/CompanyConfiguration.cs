@@ -17,6 +17,8 @@ public class CompanyConfiguration : IEntityTypeConfiguration<Company>
     {
         builder.ToTable(nameof(Company));
 
+        builder.HasKey(u => u.Id);
+
         builder
             .Property(u => u.Name)
             .IsRequired()

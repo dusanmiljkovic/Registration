@@ -1,7 +1,7 @@
 ﻿﻿using Registration.Domain.Entities.Users;
 using Registration.Domain.Interfaces;
 using Registration.Services.Exceptions;
-using Registration.Services.Users.Contracts;
+using Registration.Services.Users.Interfaces;
 using Registration.Services.Users.Dto.Commands.DeleteUser;
 using Registration.Services.Users.Dto.Commands.UpdateUser;
 using Registration.Services.Users.Dto.Queries.GetUser;
@@ -52,8 +52,8 @@ public class UserService : BaseService, IUserService
 
         user.Update(updateUserCommand.Username, updateUserCommand.Email, updateUserCommand.Password);
 
-        var updatedUser = _unitOfWork.UserRepository.Update(user);
-        await SaveChanges();
+        _unitOfWork.UserRepository.Update(user);
+        await _unitOfWork.SaveChangesAsync();
 
         return new UpdateUserCommandResponse()
         {
@@ -78,18 +78,6 @@ public class UserService : BaseService, IUserService
         {
             _unitOfWork.CompanyRepository.RemoveById(user.CompanyId);
         }
-        await SaveChanges();
-    }
-
-    private async Task SaveChanges()
-    {
-        try
-        {
-            await _unitOfWork.SaveChangesAsync();
-        }
-        catch (Exception)
-        {
-            throw new InvalidStateException($"[{nameof(UserService)}] Error occured while saving to the database.");
-        }
+        await _unitOfWork.SaveChangesAsync();
     }
 }

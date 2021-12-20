@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Registration.Api.Dtos.User;
-using Registration.Domain.Entities.Users;
 using Registration.Services.Users;
 using Registration.Services.Users.Dto.Commands.DeleteUser;
 using Registration.Services.Users.Dto.Commands.UpdateUser;

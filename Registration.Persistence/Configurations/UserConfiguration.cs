@@ -17,6 +17,8 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
     {
         builder.ToTable(nameof(User));
 
+        builder.HasKey(u => u.Id);
+
         builder
             .Property(u => u.Username)
             .IsRequired()

@@ -2,7 +2,7 @@
 using Registration.Services.Users.Dto.Commands.UpdateUser;
 using Registration.Services.Users.Dto.Queries.GetUser;
 
-namespace Registration.Services.Users.Contracts;
+namespace Registration.Services.Users.Interfaces;
 
 public interface IUserService
 {

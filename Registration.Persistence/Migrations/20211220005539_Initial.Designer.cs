@@ -11,7 +11,7 @@ using Registration.Persistence.Data;
 namespace Registration.Persistence.Migrations
 {
     [DbContext(typeof(RegistrationContext))]
-    [Migration("20211219114056_Initial")]
+    [Migration("20211220005539_Initial")]
     partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -62,7 +62,7 @@ namespace Registration.Persistence.Migrations
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
 
-                    b.Property<string>("UserName")
+                    b.Property<string>("Username")
                         .IsRequired()
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
