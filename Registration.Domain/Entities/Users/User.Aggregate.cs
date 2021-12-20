@@ -44,6 +44,15 @@ public partial class User : IAggregateRoot
     /// <param name="companyId">Company id.</param>
     public void AddCompany(long companyId)
     {
+        UpdateCompany(companyId);
+    }
+
+    /// <summary>
+    /// Update user company.
+    /// </summary>
+    /// <param name="companyId">Company id.</param>
+    public void UpdateCompany(long companyId)
+    {
         CompanyId = companyId;
     }
 }

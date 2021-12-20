@@ -39,5 +39,9 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
             .WithMany(s => s.Users)
             .HasForeignKey(e => e.CompanyId)
             .OnDelete(DeleteBehavior.NoAction);
+
+        builder.HasAlternateKey(u => u.Username);
+        builder.HasAlternateKey(u => u.Email);
+
     }
 }

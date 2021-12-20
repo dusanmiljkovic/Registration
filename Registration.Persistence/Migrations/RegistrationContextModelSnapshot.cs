@@ -36,6 +36,8 @@ namespace Registration.Persistence.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasAlternateKey("Name");
+
                     b.ToTable("Company", (string)null);
                 });
 
@@ -66,6 +68,10 @@ namespace Registration.Persistence.Migrations
                         .HasColumnType("nvarchar(50)");
 
                     b.HasKey("Id");
+
+                    b.HasAlternateKey("Email");
+
+                    b.HasAlternateKey("Username");
 
                     b.HasIndex("CompanyId");
 

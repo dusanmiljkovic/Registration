@@ -23,5 +23,7 @@ public class CompanyConfiguration : IEntityTypeConfiguration<Company>
             .Property(u => u.Name)
             .IsRequired()
             .HasMaxLength(50);
+
+        builder.HasAlternateKey(u => u.Name);
     }
 }

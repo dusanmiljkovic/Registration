@@ -19,6 +19,7 @@ namespace Registration.Persistence.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Company", x => x.Id);
+                    table.UniqueConstraint("AK_Company_Name", x => x.Name);
                 });
 
             migrationBuilder.CreateTable(
@@ -35,6 +36,8 @@ namespace Registration.Persistence.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_User", x => x.Id);
+                    table.UniqueConstraint("AK_User_Email", x => x.Email);
+                    table.UniqueConstraint("AK_User_Username", x => x.Username);
                     table.ForeignKey(
                         name: "FK_User_Company_CompanyId",
                         column: x => x.CompanyId,

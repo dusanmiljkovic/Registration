@@ -14,4 +14,9 @@ public class UpdateUserCommandResponse
     /// Password.
     /// </summary>
     public string Email { get; set; }
+
+    /// <summary>
+    /// Company name.
+    /// </summary>
+    public string CompanyName { get; set; }
 }

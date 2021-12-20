@@ -36,6 +36,7 @@ public class RegistrationController : ControllerBase
     [ProducesResponseType(StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> Register(RegisterRequest registerRequest)
     {
         RegisterUserCommand registerUserCommand = new() { 

@@ -11,7 +11,7 @@ using Registration.Persistence.Data;
 namespace Registration.Persistence.Migrations
 {
     [DbContext(typeof(RegistrationContext))]
-    [Migration("20211220005539_Initial")]
+    [Migration("20211220182026_Initial")]
     partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -37,6 +37,8 @@ namespace Registration.Persistence.Migrations
                         .HasColumnType("nvarchar(50)");
 
                     b.HasKey("Id");
+
+                    b.HasAlternateKey("Name");
 
                     b.ToTable("Company", (string)null);
                 });
@@ -68,6 +70,10 @@ namespace Registration.Persistence.Migrations
                         .HasColumnType("nvarchar(50)");
 
                     b.HasKey("Id");
+
+                    b.HasAlternateKey("Email");
+
+                    b.HasAlternateKey("Username");
 
                     b.HasIndex("CompanyId");
 

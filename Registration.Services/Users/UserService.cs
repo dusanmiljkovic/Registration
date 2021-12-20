@@ -36,19 +36,25 @@ public class UserService : BaseService, IUserService
     {
         Guard.ThrowIfNull(getUserCommand, nameof(getUserCommand));
 
-        User? user = _unitOfWork.UserRepository.GetById(getUserCommand.UserId);
-
+        var user = _unitOfWork.UserRepository.GetById(getUserCommand.UserId);
         if (user is null)
         {
             _logger.Error("User with ID \"{Id}\" was not found.", getUserCommand.UserId);
             throw new NotFoundException($"User with ID \"{getUserCommand.UserId}\" was not found.");
         }
 
+        var company = _unitOfWork.CompanyRepository.GetById(user.CompanyId);
+        if (company is null)
+        {
+            _logger.Error("Company with ID \"{Id}\" was not found.", user.CompanyId);
+            throw new NotFoundException($"Company with ID \"{user.CompanyId}\" was not found.");
+        }
+
         var response = new GetUserCommandResponse
         {
             UserId = user.Id,
             Username = user.Username,
-            CompanyId = user.CompanyId,
+            CompanyName = company.Name,
             Email = user.Email,
         };
         return response;
@@ -59,8 +65,13 @@ public class UserService : BaseService, IUserService
     {
         Guard.ThrowIfNull(updateUserCommand, nameof(updateUserCommand));
 
-        var user = _unitOfWork.UserRepository.GetById(updateUserCommand.UserId);
+        var user = _unitOfWork.UserRepository.Find(u => (u.Email.ToLower() == updateUserCommand.Email.ToLower() || u.Username.ToLower() == updateUserCommand.Username.ToLower()) && u.Id != updateUserCommand.UserId).FirstOrDefault();
+        if (user is not null)
+        {
+            throw new UniqueException($"Email and password must be unique.");
+        }
 
+        user = _unitOfWork.UserRepository.GetById(updateUserCommand.UserId);
         if (user is null)
         {
             _logger.Error("User with ID \"{Id}\" was not found.", updateUserCommand.UserId);
@@ -68,6 +79,18 @@ public class UserService : BaseService, IUserService
         }
 
         user.Update(updateUserCommand.Username, updateUserCommand.Password, updateUserCommand.Email);
+
+        var company = _unitOfWork.CompanyRepository.Find(c => c.Name == updateUserCommand.CompanyName && c.Id != user.CompanyId).FirstOrDefault();
+        if (company is not null)
+        {
+            user.UpdateCompany(company.Id);
+        }
+        else
+        {
+            company = _unitOfWork.CompanyRepository.GetById(user.CompanyId);
+            company.Update(updateUserCommand.CompanyName);
+            _unitOfWork.CompanyRepository.Update(company);
+        }
 
         _unitOfWork.UserRepository.Update(user);
         await _unitOfWork.SaveChangesAsync();
@@ -77,7 +100,8 @@ public class UserService : BaseService, IUserService
         return new UpdateUserCommandResponse()
         {
             Username = user.Username,
-            Email = user.Email
+            Email = user.Email,
+            CompanyName = company.Name
         };
     }
 

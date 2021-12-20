@@ -23,5 +23,5 @@ public class GetUserCommandResponse
     /// <summary>
     /// Company id.
     /// </summary>
-    public long CompanyId { get; set; }
+    public string CompanyName { get; set; }
 }

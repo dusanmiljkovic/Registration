@@ -4,6 +4,7 @@ using Registration.Domain.Interfaces;
 using Registration.Services.Registration.Interfaces;
 using Registration.Services.Registration.Dto.Commands.RegisterUser;
 using Registration.Shared.Extensions;
+using Registration.Services.Exceptions;
 
 namespace Registration.Services.Registration;
 
@@ -33,8 +34,13 @@ public class RegistrationService : BaseService, IRegistrationService
     public async Task<RegisterUserCommandResponse> RegisterUserAsync(RegisterUserCommand registerUserCommand)
     {
         Guard.ThrowIfNull(registerUserCommand, nameof(registerUserCommand));
-
-        var user = new User(registerUserCommand.Username, registerUserCommand.Password, registerUserCommand.Email);
+        var user = _unitOfWork.UserRepository.Find(u => u.Email.ToLower() == registerUserCommand.Email.ToLower() || u.Username.ToLower() == registerUserCommand.Username.ToLower()).FirstOrDefault();
+        if (user is not null)
+        {
+            throw new UniqueException("Email and password must be unique.");
+        }
+        
+        user = new User(registerUserCommand.Username, registerUserCommand.Password, registerUserCommand.Email);
         var company = _unitOfWork.CompanyRepository.Find(c => c.Name.ToLower() == registerUserCommand.CompanyName.ToLower()).FirstOrDefault();
         if (company is null)
         {
@@ -44,7 +50,7 @@ public class RegistrationService : BaseService, IRegistrationService
         }
         else
         {
-            user.AddCompany(company.Id);
+            user.UpdateCompany(company.Id);
             _unitOfWork.UserRepository.Add(user);
         }
 

@@ -3,6 +3,7 @@ using NUnit.Framework;
 using Registration.Domain.Entities.Companies;
 using Registration.Domain.Entities.Users;
 using Registration.Domain.Interfaces;
+using Registration.Services.Exceptions;
 using Registration.Services.Registration;
 using Registration.Services.Registration.Dto.Commands.RegisterUser;
 using System;
@@ -38,6 +39,8 @@ namespace Registration.Services.Tests
             _companyRepositoryMock = new Mock<ICompanyRepository>(MockBehavior.Strict);
 
             _unitOfWorkMock.Setup(u => u.CompanyRepository).Returns(_companyRepositoryMock.Object);
+            _unitOfWorkMock.Setup(u => u.UserRepository).Returns(_userRepositoryMock.Object);
+
             _unitOfWorkMock.Setup(u => u.SaveChangesAsync()).ReturnsAsync(1);
             _loggerMock.Setup(u => u.Information(It.IsAny<string>(), It.IsAny<long>()));
 
@@ -50,7 +53,42 @@ namespace Registration.Services.Tests
         }
 
         [Test]
-        public void RegisterUser_ShouldRegisterUser_WhenCompanyDoesNotExist()
+        public void RegisterUser_ShouldThrowException_WhenCommandNull()
+        {
+            // ACT and ASSERT
+            Assert.ThrowsAsync<ArgumentNullException>(async () => await classUnderTest.RegisterUserAsync(null));
+        }
+
+        [Test]
+        public void RegistrationServiceConstructor_ShouldThrowException_WhenAnyParameterNull()
+        {
+            // ACT and ASSERT
+            Assert.Throws<ArgumentNullException>(() => new RegistrationService(null, _unitOfWorkMock.Object));
+            Assert.Throws<ArgumentNullException>(() => new RegistrationService(_loggerMock.Object, null));
+        }
+
+        [Test]
+        public void RegisterUser_ShouldThrowException_WhenUserUsernameOrEmailAlreadyExists()
+        {
+            RegisterUserCommand registerUserCommand = new()
+            {
+                CompanyName = _companyName,
+                Username = _username,
+                Password = _password,
+                Email = _email
+            };
+            _userRepositoryMock.Setup(u => u.Find(It.IsAny<Expression<Func<User, bool>>>())).Returns(new List<User> { _user });
+            _loggerMock.Setup(u => u.Information(It.IsAny<string>()));
+
+            // ACT
+            var ex = Assert.ThrowsAsync<UniqueException>(async () => await classUnderTest.RegisterUserAsync(registerUserCommand));
+
+            // ASSERT
+            Assert.That(ex.Message, Is.EqualTo("Email and password must be unique."), "Exception message is not correct.");
+        }
+
+        [Test]
+        public void RegisterUser_ShouldCreateCompany_WhenCompanyDoesNotExist()
         {
             // ARRANGE
             RegisterUserCommand registerUserCommand = new()
@@ -60,6 +98,8 @@ namespace Registration.Services.Tests
                 Password = _password,
                 Email = _email
             };
+
+            _userRepositoryMock.Setup(u => u.Find(It.IsAny<Expression<Func<User, bool>>>())).Returns(new List<User> { });
             _companyRepositoryMock.Setup(u => u.Add(It.IsAny<Company>())).Returns(_company);
             _companyRepositoryMock.Setup(u => u.Find(It.IsAny<Expression<Func<Company, bool>>>())).Returns(new List<Company> { });
             _loggerMock.Setup(u => u.Information(It.IsAny<string>()));
@@ -72,8 +112,6 @@ namespace Registration.Services.Tests
             Assert.AreEqual(_username, response.Username);
             Assert.AreEqual(_companyName, response.CompanyName);
             Assert.AreEqual(_email, response.Email);
-
-            VerifyAll();
         }
 
         [Test]
@@ -88,6 +126,7 @@ namespace Registration.Services.Tests
                 Email = _email
             };
 
+            _userRepositoryMock.Setup(u => u.Find(It.IsAny<Expression<Func<User, bool>>>())).Returns(new List<User> { });
             _unitOfWorkMock.Setup(u => u.UserRepository).Returns(_userRepositoryMock.Object);
             _userRepositoryMock.Setup(u => u.Add(It.IsAny<User>())).Returns(_user);
             _companyRepositoryMock.Setup(u => u.Find(It.IsAny<Expression<Func<Company, bool>>>())).Returns(new List<Company> { _company });
@@ -100,8 +139,6 @@ namespace Registration.Services.Tests
             Assert.AreEqual(_username, response.Username);
             Assert.AreEqual(_companyName, response.CompanyName);
             Assert.AreEqual(_email, response.Email);
-
-            VerifyAll();
         }
 
         private void VerifyAll()

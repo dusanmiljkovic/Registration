@@ -33,4 +33,11 @@ public class UpdateUserCommand
     [Required]
     [StringLength(50)]
     public string Email { get; set; }
+
+    /// <summary>
+    /// Company name.
+    /// </summary>
+    [Required]
+    [StringLength(50)]
+    public string? CompanyName { get; set; }
 }

@@ -38,6 +38,7 @@ public class UserController : ControllerBase
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> GetUser(long userId)
     {
         GetUserCommand getUserCommand = new() { UserId = userId };
@@ -55,13 +56,15 @@ public class UserController : ControllerBase
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> UpdateUser(long userId, UpdateUserRequest updateUserRequest)
     {
         UpdateUserCommand updateUserCommand = new() { 
             UserId = userId, 
             Email = updateUserRequest.Email,
             Password = updateUserRequest.Password,
-            Username = updateUserRequest.Username
+            Username = updateUserRequest.Username,
+            CompanyName = updateUserRequest.CompanyName,
         };
         UpdateUserCommandResponse updatedUser = await _service.UpdateUserAsync(updateUserCommand);
         return Ok(updatedUser);
@@ -76,6 +79,7 @@ public class UserController : ControllerBase
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> DeleteUser(long userId)
     {
         DeleteUserCommand command = new() { UserId = userId };
