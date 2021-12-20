@@ -6,5 +6,6 @@
 public enum DbProviderType
 {
     InMemory,
-    SqlServer
+    SqlServer,
+    PostgreSql
 }

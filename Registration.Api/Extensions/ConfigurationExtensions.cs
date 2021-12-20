@@ -9,6 +9,7 @@ public static class ConfigurationExtensions
 {
     private const string InMemory = "InMemoryDbConnection";
     private const string SqlServer = "SqlServerDbConnection";
+    private const string PostgreSql = "PostgreSqlDbConnection";
 
     /// <summary>
     /// Get database provider type.
@@ -41,6 +42,7 @@ public static class ConfigurationExtensions
     private static DbProviderType GetDbProviderType(string connectionStringName) => connectionStringName switch
     {
         SqlServer => DbProviderType.SqlServer,
+        PostgreSql => DbProviderType.PostgreSql,
         _ => DbProviderType.InMemory,
     };
 
@@ -52,6 +54,7 @@ public static class ConfigurationExtensions
     private static string GetConnectionStringName(DbProviderType dbProviderType) => dbProviderType switch
     {
         DbProviderType.SqlServer => SqlServer,
+        DbProviderType.PostgreSql => PostgreSql,
         _ => InMemory,
     };
 }
