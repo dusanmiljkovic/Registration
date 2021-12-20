@@ -3,6 +3,7 @@ using Registration.Domain.Interfaces;
 using System.Linq.Expressions;
 using Microsoft.EntityFrameworkCore;
 using Registration.Persistence.Data;
+using Registration.Shared.Extensions;
 
 namespace Registration.Persistence.Repositories.Common
 {
@@ -31,7 +32,7 @@ namespace Registration.Persistence.Repositories.Common
         /// </summary>
         public BaseRepository(RegistrationContext context)
         {
-            _context = context;
+            _context = context.NotNull(nameof(context));
             _dbSet = context.Set<TEntity>();
         }
 

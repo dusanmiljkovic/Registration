@@ -2,6 +2,7 @@
 using Registration.Api.Dtos.Register;
 using Registration.Services.Registration;
 using Registration.Services.Registration.Dto.Commands.RegisterUser;
+using Registration.Shared.Extensions;
 
 namespace Registration.Api.Controllers;
 
@@ -18,8 +19,8 @@ public class RegistrationController : ControllerBase
     public RegistrationController(ILogger<RegistrationController> logger,
         RegistrationService service)
     {
-        _service = service;
-        _logger = logger;
+        _service = service.NotNull(nameof(service));
+        _logger = logger.NotNull(nameof(logger));
     }
 
     [HttpPost]

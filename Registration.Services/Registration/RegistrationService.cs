@@ -3,6 +3,7 @@ using Registration.Domain.Entities.Users;
 using Registration.Domain.Interfaces;
 using Registration.Services.Registration.Interfaces;
 using Registration.Services.Registration.Dto.Commands.RegisterUser;
+using Registration.Shared.Extensions;
 
 namespace Registration.Services.Registration;
 public class RegistrationService : BaseService, IRegistrationService
@@ -13,8 +14,8 @@ public class RegistrationService : BaseService, IRegistrationService
     public RegistrationService(Serilog.ILogger logger, IUnitOfWork unitOfWork)
     : base(logger, unitOfWork)
     {
-        _logger = logger;
-        _unitOfWork = unitOfWork;
+        _logger = logger.NotNull(nameof(logger));
+        _unitOfWork = unitOfWork.NotNull(nameof(unitOfWork));
     }
 
     public async Task<RegisterUserCommandResponse> RegisterUser(RegisterUserCommand registerUserCommand)

@@ -5,6 +5,7 @@ using Registration.Services.Users.Interfaces;
 using Registration.Services.Users.Dto.Commands.DeleteUser;
 using Registration.Services.Users.Dto.Commands.UpdateUser;
 using Registration.Services.Users.Dto.Queries.GetUser;
+using Registration.Shared.Extensions;
 
 namespace Registration.Services.Users;
 
@@ -16,8 +17,8 @@ public class UserService : BaseService, IUserService
     public UserService(Serilog.ILogger logger, IUnitOfWork unitOfWork)
         : base(logger, unitOfWork)
     {
-        _logger = logger;
-        _unitOfWork = unitOfWork;
+        _logger = logger.NotNull(nameof(logger));
+        _unitOfWork = unitOfWork.NotNull(nameof(unitOfWork));
     }
 
     public async Task<GetUserCommandResponse> GetUser(GetUserCommand getUserCommand)

@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 using Registration.Services.Exceptions;
+using Registration.Shared.Extensions;
 
 namespace Registration.Api.Controllers;
 
@@ -22,7 +23,7 @@ public class ErrorController : ControllerBase
     /// <param name="logger">Logger instance.</param>
     public ErrorController(ILogger<ErrorController> logger)
     {
-        _logger = logger;
+        _logger = logger.NotNull(nameof(logger));
     }
 
     /// <summary>

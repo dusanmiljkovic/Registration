@@ -24,10 +24,7 @@
   <ItemGroup>
     <ProjectReference Include="..\Registration.Persistence\Registration.Persistence.csproj" />
     <ProjectReference Include="..\Registration.Services\Registration.Services.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="logs\" />
+    <ProjectReference Include="..\Registration.Shared\Registration.Shared.csproj" />
   </ItemGroup>
 
 </Project>

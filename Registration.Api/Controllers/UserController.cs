@@ -4,6 +4,7 @@ using Registration.Services.Users;
 using Registration.Services.Users.Dto.Commands.DeleteUser;
 using Registration.Services.Users.Dto.Commands.UpdateUser;
 using Registration.Services.Users.Dto.Queries.GetUser;
+using Registration.Shared.Extensions;
 
 namespace Registration.Api.Controllers;
 
@@ -19,8 +20,8 @@ public class UserController : ControllerBase
     public UserController(ILogger<UserController> logger, 
         UserService service)
     {
-        _service = service;
-        _logger = logger;
+        _service = service.NotNull(nameof(service));
+        _logger = logger.NotNull(nameof(logger));
     }
 
     [HttpGet("{userId}")]
