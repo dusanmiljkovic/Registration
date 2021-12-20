@@ -31,22 +31,22 @@ public class RegistrationService : BaseService, IRegistrationService
     }
 
     /// <inheritdoc/>
-    public async Task<RegisterUserCommandResponse> RegisterUserAsync(RegisterUserCommand registerUserCommand)
+    public async Task<RegisterUserCommandResponse> RegisterUserAsync(RegisterUserCommand command)
     {
-        Guard.ThrowIfNull(registerUserCommand, nameof(registerUserCommand));
-        var user = _unitOfWork.UserRepository.Find(u => u.Email.ToLower() == registerUserCommand.Email.ToLower() || u.Username.ToLower() == registerUserCommand.Username.ToLower()).FirstOrDefault();
+        Guard.ThrowIfNull(command, nameof(command));
+        var user = FindUserByEmailOrUsername(command.Email, command.Username);
         if (user is not null)
         {
-            throw new UniqueException("Email and password must be unique.");
+            throw new UniqueException("Email and username must be unique.");
         }
         
-        user = new User(registerUserCommand.Username, registerUserCommand.Password, registerUserCommand.Email);
-        var company = _unitOfWork.CompanyRepository.Find(c => c.Name.ToLower() == registerUserCommand.CompanyName.ToLower()).FirstOrDefault();
+        user = new User(command.Username, command.Password, command.Email);
+        var company = FindCompanyByName(command.CompanyName);
         if (company is null)
         {
-             company = new Company(registerUserCommand.CompanyName, user);
+             company = new Company(command.CompanyName, user);
             _unitOfWork.CompanyRepository.Add(company);
-            _logger.Information("New company created.");
+            _logger.Information("New company with name {Id} saved successfully.", company.Name);
         }
         else
         {
@@ -60,9 +60,31 @@ public class RegistrationService : BaseService, IRegistrationService
 
         return new RegisterUserCommandResponse()
         {
+            UserId = user.Id,
             CompanyName = company.Name,
             Username = user.Username,
             Email = user.Email
         };
+    }
+
+    /// <summary>
+    /// Find company by name.
+    /// </summary>
+    /// <param name="companyName"></param>
+    /// <returns>Company instance.</returns>
+    private Company? FindCompanyByName(string companyName)
+    {
+        return _unitOfWork.CompanyRepository.Find(c => c.Name.ToLower() == companyName.ToLower()).FirstOrDefault();
+    }
+
+    /// <summary>
+    /// Find user by email or username.
+    /// </summary>
+    /// <param name="email">Email.</param>
+    /// <param name="username">Username.</param>
+    /// <returns>User instance.</returns>
+    private User? FindUserByEmailOrUsername(string email, string username)
+    {
+        return _unitOfWork.UserRepository.Find(u => u.Email.ToLower() == email.ToLower() || u.Username.ToLower() == username.ToLower()).FirstOrDefault();
     }
 }

@@ -1,4 +1,5 @@
 ﻿using Registration.Domain.Base;
+using Registration.Domain.Entities.Companies;
 
 namespace Registration.Domain.Entities.Users;
 
@@ -54,5 +55,14 @@ public partial class User : IAggregateRoot
     public void UpdateCompany(long companyId)
     {
         CompanyId = companyId;
+    }
+
+    /// <summary>
+    /// Update user company.
+    /// </summary>
+    /// <param name="company">Company.</param>
+    public void UpdateCompany(Company company)
+    {
+        Company = company;
     }
 }

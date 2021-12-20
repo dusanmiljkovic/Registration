@@ -6,6 +6,10 @@
 public class UpdateUserCommandResponse
 {
     /// <summary>
+    /// User id.
+    /// </summary>
+    public long UserId { get; set; }
+    /// <summary>
     /// Username.
     /// </summary>
     public string Username { get; set; }

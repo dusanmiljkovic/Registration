@@ -43,7 +43,7 @@ public class ErrorController : ControllerBase
             switch (exception)
             {
                 case UniqueException:
-                    return StatusCode(400, message);
+                    return StatusCode(409, message);
                 case NotFoundException:
                     return StatusCode(404, message);
                 default:

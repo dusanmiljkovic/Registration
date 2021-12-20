@@ -17,13 +17,13 @@ public class CompanyConfiguration : IEntityTypeConfiguration<Company>
     {
         builder.ToTable(nameof(Company));
 
-        builder.HasKey(u => u.Id);
+        builder.HasKey(c => c.Id);
 
         builder
-            .Property(u => u.Name)
+            .Property(c => c.Name)
             .IsRequired()
             .HasMaxLength(50);
 
-        builder.HasAlternateKey(u => u.Name);
+        builder.HasIndex(c => c.Name).IsUnique();
     }
 }

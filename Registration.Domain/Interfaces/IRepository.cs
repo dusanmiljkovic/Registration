@@ -15,13 +15,21 @@ public interface IRepository<TEntity> where TEntity : BaseEntity
     /// <param name="id">Entity id.</param>
     /// <returns>Desired entity.</returns>
     TEntity? GetById(long id);
-    
+
     /// <summary>
-    /// 
+    /// Find entities.
     /// </summary>
-    /// <param name="predicate"></param>
-    /// <returns></returns>
+    /// <param name="predicate">Filter conditions.</param>
+    /// <returns>Collection of entities.</returns>
     IEnumerable<TEntity> Find(Expression<Func<TEntity, bool>> predicate);
+
+    /// <summary>
+    /// Find entities.
+    /// </summary>
+    /// <param name="predicate">Filter conditions.</param>
+    /// <param name="paths">Including entities.</param>
+    /// <returns>Collection of entities.</returns>
+    IEnumerable<TEntity> Find(Expression<Func<TEntity, bool>> predicate, params Expression<Func<TEntity, object>>[] paths);
 
     /// <summary>
     /// 

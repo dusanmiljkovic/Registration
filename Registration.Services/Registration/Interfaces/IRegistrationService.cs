@@ -8,10 +8,10 @@ namespace Registration.Services.Registration.Interfaces;
 public interface IRegistrationService
 {
     /// <summary>
-    /// Asynchronously registers new user record based on <paramref name="registerUserCommand"/>.
+    /// Asynchronously registers new user record based on <paramref name="command"/>.
     /// Returns instance of saved entyty with a task that represents an asynchronous operation.
     /// </summary>
-    /// <param name="registerUserCommand">Contains information for registering new user.</param>
-    /// <exception cref="ArgumentNullException">Thrown when <paramref name="registerUserCommand"/> is not set.</exception>
-    Task<RegisterUserCommandResponse> RegisterUserAsync(RegisterUserCommand registerUserCommand);
+    /// <param name="command">Contains information for registering new user.</param>
+    /// <exception cref="ArgumentNullException">Thrown when <paramref name="command"/> is not set.</exception>
+    Task<RegisterUserCommandResponse> RegisterUserAsync(RegisterUserCommand command);
 }

@@ -40,8 +40,8 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
             .HasForeignKey(e => e.CompanyId)
             .OnDelete(DeleteBehavior.NoAction);
 
-        builder.HasAlternateKey(u => u.Username);
-        builder.HasAlternateKey(u => u.Email);
+        builder.HasIndex(u => u.Username).IsUnique();
+        builder.HasIndex(u => u.Email).IsUnique();
 
     }
 }

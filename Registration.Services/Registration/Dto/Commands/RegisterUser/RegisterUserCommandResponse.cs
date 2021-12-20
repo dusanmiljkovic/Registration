@@ -6,6 +6,11 @@
 public class RegisterUserCommandResponse
 {
     /// <summary>
+    /// User id.
+    /// </summary>
+    public long UserId { get; set; }
+
+    /// <summary>
     /// Company name.
     /// </summary>
     public string CompanyName { get; set; }

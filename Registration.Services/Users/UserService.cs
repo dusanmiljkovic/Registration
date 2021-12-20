@@ -6,6 +6,7 @@ using Registration.Services.Users.Dto.Commands.DeleteUser;
 using Registration.Services.Users.Dto.Commands.UpdateUser;
 using Registration.Services.Users.Dto.Queries.GetUser;
 using Registration.Shared.Extensions;
+using Registration.Domain.Entities.Companies;
 
 namespace Registration.Services.Users;
 
@@ -32,73 +33,69 @@ public class UserService : BaseService, IUserService
     }
 
     /// <inheritdoc/>
-    public async Task<GetUserCommandResponse> GetUserAsync(GetUserCommand getUserCommand)
+    public async Task<GetUserCommandResponse> GetUserAsync(GetUserCommand command)
     {
-        Guard.ThrowIfNull(getUserCommand, nameof(getUserCommand));
+        Guard.ThrowIfNull(command, nameof(command));
 
-        var user = _unitOfWork.UserRepository.GetById(getUserCommand.UserId);
+        var user = _unitOfWork.UserRepository.Find(u => u.Id == command.UserId, u => u.Company).FirstOrDefault();
         if (user is null)
         {
-            _logger.Error("User with ID \"{Id}\" was not found.", getUserCommand.UserId);
-            throw new NotFoundException($"User with ID \"{getUserCommand.UserId}\" was not found.");
-        }
-
-        var company = _unitOfWork.CompanyRepository.GetById(user.CompanyId);
-        if (company is null)
-        {
-            _logger.Error("Company with ID \"{Id}\" was not found.", user.CompanyId);
-            throw new NotFoundException($"Company with ID \"{user.CompanyId}\" was not found.");
+            _logger.Error("User with ID \"{Id}\" was not found.", command.UserId);
+            throw new NotFoundException($"User with ID \"{command.UserId}\" was not found.");
         }
 
         var response = new GetUserCommandResponse
         {
             UserId = user.Id,
             Username = user.Username,
-            CompanyName = company.Name,
+            CompanyName = user.Company.Name,
             Email = user.Email,
         };
         return response;
     }
 
     /// <inheritdoc/>
-    public async Task<UpdateUserCommandResponse> UpdateUserAsync(UpdateUserCommand updateUserCommand)
+    public async Task<UpdateUserCommandResponse> UpdateUserAsync(UpdateUserCommand command)
     {
-        Guard.ThrowIfNull(updateUserCommand, nameof(updateUserCommand));
+        Guard.ThrowIfNull(command, nameof(command));
 
-        var user = _unitOfWork.UserRepository.Find(u => (u.Email.ToLower() == updateUserCommand.Email.ToLower() || u.Username.ToLower() == updateUserCommand.Username.ToLower()) && u.Id != updateUserCommand.UserId).FirstOrDefault();
+        var user = GetUserByUsernameOrEmailDifferentThanUserId(command.Username, command.Password, command.UserId);
         if (user is not null)
         {
             throw new UniqueException($"Email and password must be unique.");
         }
 
-        user = _unitOfWork.UserRepository.GetById(updateUserCommand.UserId);
+        user = _unitOfWork.UserRepository.GetById(command.UserId);
         if (user is null)
         {
-            _logger.Error("User with ID \"{Id}\" was not found.", updateUserCommand.UserId);
-            throw new NotFoundException($"User with ID \"{updateUserCommand.UserId}\" was not found.");
+            _logger.Error("User with ID \"{Id}\" was not found.", command.UserId);
+            throw new NotFoundException($"User with ID \"{command.UserId}\" was not found.");
         }
 
-        user.Update(updateUserCommand.Username, updateUserCommand.Password, updateUserCommand.Email);
+        user.Update(command.Username, command.Password, command.Email);
 
-        var company = _unitOfWork.CompanyRepository.Find(c => c.Name == updateUserCommand.CompanyName && c.Id != user.CompanyId).FirstOrDefault();
+        bool checkIfCompanyHasNoUser = false;
+
+        var company = GetCompanyByNameDifferentThanCompanyId(command.CompanyName, user.CompanyId);
         if (company is not null)
         {
             user.UpdateCompany(company.Id);
         }
         else
         {
-            company = _unitOfWork.CompanyRepository.GetById(user.CompanyId);
-            company.Update(updateUserCommand.CompanyName);
-            _unitOfWork.CompanyRepository.Update(company);
+            checkIfCompanyHasNoUser = true;
+            company = new Company(command.CompanyName);
+            user.UpdateCompany(company);
+            _logger.Information("Creating new company with name {Name}.", company.Name);
         }
 
         _unitOfWork.UserRepository.Update(user);
         await _unitOfWork.SaveChangesAsync();
-
         _logger.Information("User with ID \"{Id}\" successfully updated.", user.Id);
 
         return new UpdateUserCommandResponse()
         {
+            UserId = user.Id,
             Username = user.Username,
             Email = user.Email,
             CompanyName = company.Name
@@ -106,18 +103,18 @@ public class UserService : BaseService, IUserService
     }
 
     /// <inheritdoc/>
-    public async Task DeleteUserAsync(DeleteUserCommand deleteUserCommand)
+    public async Task DeleteUserAsync(DeleteUserCommand command)
     {
-        Guard.ThrowIfNull(deleteUserCommand, nameof(deleteUserCommand));
+        Guard.ThrowIfNull(command, nameof(command));
 
-        var user = _unitOfWork.UserRepository.GetById(deleteUserCommand.UserId);
+        var user = _unitOfWork.UserRepository.GetById(command.UserId);
         if (user is null)
         {
-            _logger.Error("User with ID \"{Id}\" was not found.", deleteUserCommand.UserId);
-            throw new NotFoundException($"User with ID \"{deleteUserCommand.UserId}\" was not found.");
+            _logger.Error("User with ID \"{Id}\" was not found.", command.UserId);
+            throw new NotFoundException($"User with ID \"{command.UserId}\" was not found.");
         }
 
-        _unitOfWork.UserRepository.RemoveById(deleteUserCommand.UserId);
+        _unitOfWork.UserRepository.RemoveById(command.UserId);
 
         var usersList = _unitOfWork.UserRepository.Find(u => u.CompanyId == user.CompanyId).ToList();
         if (usersList.Count == 1)
@@ -127,5 +124,28 @@ public class UserService : BaseService, IUserService
         }
         _logger.Information("User with ID \"{Id}\" successfully removed.", user.Id);
         await _unitOfWork.SaveChangesAsync();
+    }
+
+    /// <summary>
+    /// Get user by esrname or email that is different than user id.
+    /// </summary>
+    /// <param name="username">Username.</param>
+    /// <param name="email">Email.</param>
+    /// <param name="userId">User id.</param>
+    /// <returns>User instance.</returns>
+    private User? GetUserByUsernameOrEmailDifferentThanUserId(string username, string email, long userId)
+    {
+        return _unitOfWork.UserRepository.Find(u => (u.Email.ToLower() == email.ToLower() || u.Username.ToLower() == username.ToLower()) && u.Id != userId).FirstOrDefault();
+    }
+
+    /// <summary>
+    /// Get company by name different than company id.
+    /// </summary>
+    /// <param name="companyName"></param>
+    /// <param name="companyId"></param>
+    /// <returns></returns>
+    private Company? GetCompanyByNameDifferentThanCompanyId(string companyName, long companyId)
+    {
+        return _unitOfWork.CompanyRepository.Find(c => c.Name == companyName && c.Id != companyId).FirstOrDefault();
     }
 }

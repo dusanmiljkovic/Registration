@@ -5,26 +5,29 @@ using Registration.Services.Users.Dto.Queries.GetUser;
 
 namespace Registration.Services.Users.Interfaces;
 
+/// <summary>
+/// Provides management operations for the <see cref="UserService"/> domain model.
+/// </summary>
 public interface IUserService
 {
     /// <summary>
-    /// Asynchronously gets the <see cref="User"/> record based on provided <paramref name="getUserCommand"/>.
+    /// Asynchronously gets the <see cref="User"/> record based on provided <paramref name="command"/>.
     /// </summary>
-    /// <param name="getUserCommand">The get <see cref="User"/> command.</param>
-    /// <exception cref="ArgumentNullException">Thrown when <paramref name="getUserCommand"/> is not set.</exception>
-    Task<GetUserCommandResponse> GetUserAsync(GetUserCommand getUserCommand);
+    /// <param name="command">The get <see cref="User"/> command.</param>
+    /// <exception cref="ArgumentNullException">Thrown when <paramref name="command"/> is not set.</exception>
+    Task<GetUserCommandResponse> GetUserAsync(GetUserCommand command);
 
     /// <summary>
-    /// Asynchronously updates the <see cref="User"/> record based on provided <paramref name="updateUserCommand"/>.
+    /// Asynchronously updates the <see cref="User"/> record based on provided <paramref name="command"/>.
     /// </summary>
-    /// <param name="updateUserCommand">The update <see cref="User"/> command.</param>
-    /// <exception cref="ArgumentNullException">Thrown when <paramref name="updateUserCommand"/> is not set.</exception>
-    Task<UpdateUserCommandResponse> UpdateUserAsync(UpdateUserCommand updateUserCommand);
+    /// <param name="command">The update <see cref="User"/> command.</param>
+    /// <exception cref="ArgumentNullException">Thrown when <paramref name="command"/> is not set.</exception>
+    Task<UpdateUserCommandResponse> UpdateUserAsync(UpdateUserCommand command);
 
     /// <summary>
-    /// Asynchronously deletes the <see cref="User"/> record based on provided <paramref name="deleteUserCommand"/>.
+    /// Asynchronously deletes the <see cref="User"/> record based on provided <paramref name="command"/>.
     /// </summary>
-    /// <param name="deleteUserCommand">The delete <see cref="User"/> command.</param>
-    /// <exception cref="ArgumentNullException">Thrown when <paramref name="deleteUserCommand"/> is not set.</exception>
-    Task DeleteUserAsync(DeleteUserCommand deleteUserCommand);
+    /// <param name="command">The delete <see cref="User"/> command.</param>
+    /// <exception cref="ArgumentNullException">Thrown when <paramref name="command"/> is not set.</exception>
+    Task DeleteUserAsync(DeleteUserCommand command);
 }

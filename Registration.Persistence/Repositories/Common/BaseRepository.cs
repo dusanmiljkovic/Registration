@@ -47,6 +47,18 @@ public class BaseRepository<TEntity> : IRepository<TEntity> where TEntity : Base
     {
         return _dbSet.Where(predicate);
     }
+    
+    /// <inheritdoc/>
+    public IEnumerable<TEntity> Find(Expression<Func<TEntity, bool>> predicate, params Expression<Func<TEntity, object>>[] paths)
+    {
+        var query = _dbSet.Where(predicate);
+        foreach (var path in paths)
+        {
+            query = query.Include(path);
+        }
+
+        return query;
+    }
 
     /// <inheritdoc/>
     public TEntity? GetById(long id)

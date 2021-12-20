@@ -36,7 +36,8 @@ namespace Registration.Persistence.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasAlternateKey("Name");
+                    b.HasIndex("Name")
+                        .IsUnique();
 
                     b.ToTable("Company", (string)null);
                 });
@@ -69,11 +70,13 @@ namespace Registration.Persistence.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasAlternateKey("Email");
-
-                    b.HasAlternateKey("Username");
-
                     b.HasIndex("CompanyId");
+
+                    b.HasIndex("Email")
+                        .IsUnique();
+
+                    b.HasIndex("Username")
+                        .IsUnique();
 
                     b.ToTable("User", (string)null);
                 });
