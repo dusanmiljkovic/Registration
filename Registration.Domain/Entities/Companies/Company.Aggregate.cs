@@ -6,12 +6,12 @@ public partial class Company : IAggregateRoot
 {
     public Company(string name)
     {
-        this.Update(name);
+        Update(name);
     }
 
     public Company(string name, User user)
     {
-        this.Update(name);
+        Update(name);
         AddUser(user);
     }
 

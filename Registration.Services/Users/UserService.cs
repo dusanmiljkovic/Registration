@@ -22,7 +22,7 @@ public class UserService : BaseService, IUserService
 
     public async Task<GetUserCommandResponse> GetUser(GetUserCommand getUserCommand)
     {
-        User user = _unitOfWork.UserRepository.GetById(getUserCommand.UserId);
+        User? user = _unitOfWork.UserRepository.GetById(getUserCommand.UserId);
 
         if (user is null)
         {

@@ -44,7 +44,7 @@ public class UserController : ControllerBase
             Password = updateUserRequest.Password,
             Username = updateUserRequest.Username
         };
-        var updatedUser = await _service.UpdateUser(updateUserCommand);
+        UpdateUserCommandResponse updatedUser = await _service.UpdateUser(updateUserCommand);
         return Ok(updatedUser);
     }
 

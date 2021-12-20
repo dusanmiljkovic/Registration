@@ -33,7 +33,7 @@ public class RegistrationController : ControllerBase
             Password = registerRequest.Password,
             Email = registerRequest.Email
         };
-        var registeredUser = await _service.RegisterUser(registerUserCommand);
-        return Ok(registeredUser);
+        RegisterUserCommandResponse registeredUser = await _service.RegisterUser(registerUserCommand);
+        return CreatedAtAction(nameof(RegisterUserCommandResponse) ,registeredUser);
     }
 }

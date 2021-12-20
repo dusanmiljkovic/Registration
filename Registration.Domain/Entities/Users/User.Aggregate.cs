@@ -7,14 +7,14 @@ public partial class User : IAggregateRoot
         string password,
         string email)
     {
-        this.Update(
-            username, 
-            password, 
-            email);  
+        Update(
+            username,
+            password,
+            email);
     }
 
-    public void Update(string username, 
-        string password, 
+    public void Update(string username,
+        string password,
         string email)
     {
         Username = username;
