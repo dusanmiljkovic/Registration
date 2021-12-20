@@ -26,6 +26,7 @@ public class UpdateUserRequest
     /// </summary>
     [Required]
     [StringLength(50)]
+    [RegularExpression(@"^([\w\.\-]+)@([\w\-]+)((\.(\w){2,3})+)$")]
     public string Email { get; set; }
 
     /// <summary>
@@ -33,5 +34,5 @@ public class UpdateUserRequest
     /// </summary>
     [Required]
     [StringLength(50)]
-    public string? CompanyName { get; set; }
+    public string CompanyName { get; set; }
 }
