@@ -9,6 +9,12 @@ public partial class Company : IAggregateRoot
         this.Update(name);
     }
 
+    public Company(string name, User user)
+    {
+        this.Update(name);
+        AddUser(user);
+    }
+
     public void Update(string name)
     {
         Name = name;
