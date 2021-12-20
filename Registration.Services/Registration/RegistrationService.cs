@@ -20,9 +20,18 @@ public class RegistrationService : BaseService, IRegistrationService
     public async Task<RegisterUserCommandResponse> RegisterUser(RegisterUserCommand registerUserCommand)
     {
         var user = new User(registerUserCommand.Username, registerUserCommand.Password, registerUserCommand.Email);
-        var company = new Company(registerUserCommand.CompanyName, user);
-
-        _unitOfWork.CompanyRepository.Add(company);
+        var company = _unitOfWork.CompanyRepository.Find(c => c.Name.ToLower() == registerUserCommand.CompanyName.ToLower()).FirstOrDefault();
+        if (company is null)
+        {
+             company = new Company(registerUserCommand.CompanyName, user);
+            _unitOfWork.CompanyRepository.Add(company);
+        }
+        else
+        {
+            user.AddCompany(company.Id);
+            _unitOfWork.UserRepository.Add(user);
+        }
+       
         await _unitOfWork.SaveChangesAsync(); 
 
         return new RegisterUserCommandResponse()

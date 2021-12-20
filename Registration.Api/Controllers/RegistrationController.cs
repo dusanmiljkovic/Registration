@@ -34,6 +34,6 @@ public class RegistrationController : ControllerBase
             Email = registerRequest.Email
         };
         RegisterUserCommandResponse registeredUser = await _service.RegisterUser(registerUserCommand);
-        return CreatedAtAction(nameof(RegisterUserCommandResponse) ,registeredUser);
+        return Created("", registeredUser);
     }
 }

@@ -1,8 +1,8 @@
 ﻿using Autofac;
 using Registration.Services.Registration;
-using Registration.Services.Registration.Contracts;
+using Registration.Services.Registration.Interfaces;
 using Registration.Services.Users;
-using Registration.Services.Users.Contracts;
+using Registration.Services.Users.Interfaces;
 
 namespace Registration.Services;
 internal class ServicesAutofacModule : Module
