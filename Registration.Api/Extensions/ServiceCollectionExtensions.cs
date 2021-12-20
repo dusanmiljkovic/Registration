@@ -83,6 +83,8 @@ public static class ServiceCollectionExtensions
                 return (DbContextOptionsBuilder options) => options.UseInMemoryDatabase(connectionString);
             case DbProviderType.SqlServer:
                 return (DbContextOptionsBuilder options) => options.UseSqlServer(connectionString);
+            case DbProviderType.PostgreSql:
+                return (DbContextOptionsBuilder options) => options.UseNpgsql(connectionString);
             default:
                 return null;
         }
