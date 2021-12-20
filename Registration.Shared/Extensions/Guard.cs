@@ -23,4 +23,21 @@ public static class Guard
     {
         return obj ?? throw new ArgumentNullException(name);
     }
+
+    /// <summary>
+    /// If an <paramref name="obj"/> instance is <see langword="null"/> throws <see cref="ArgumentNullException"/>.
+    /// </summary>
+    /// <typeparam name="T">The type of an object.</typeparam>
+    /// <param name="obj">The object which should be checked.</param>
+    /// <param name="name">The name of an object which should be checked.</param>
+    /// <exception cref="ArgumentNullException">Thrown when <paramref name="obj"/> instance is <see langword="null"/>.</exception>
+    public static void ThrowIfNull<T>(T obj, string name)
+        where T : class
+    {
+        if (obj == null)
+        {
+            throw new ArgumentNullException(name);
+        }
+    }
+
 }

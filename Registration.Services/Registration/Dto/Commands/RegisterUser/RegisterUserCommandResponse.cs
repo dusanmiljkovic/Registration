@@ -1,11 +1,23 @@
-﻿namespace Registration.Services.Registration.Dto.Commands.RegisterUser
-{
-    public class RegisterUserCommandResponse
-    {
-        public string CompanyName { get; set; }
+﻿namespace Registration.Services.Registration.Dto.Commands.RegisterUser;
 
-        public string Username { get; set; }
-        public string Password { get; set; }
-        public string Email { get; set; }
-    }
+/// <summary>
+/// Defines the layout of register user response.
+/// </summary>
+public class RegisterUserCommandResponse
+{
+    /// <summary>
+    /// Company name.
+    /// </summary>
+    public string CompanyName { get; set; }
+
+    /// <summary>
+    /// Username.
+    /// </summary>
+    public string Username { get; set; }
+
+    /// <summary>
+    /// Email.
+    /// </summary>
+    public string Email { get; set; }
 }
+

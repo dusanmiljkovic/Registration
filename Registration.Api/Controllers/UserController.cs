@@ -15,17 +15,28 @@ namespace Registration.Api.Controllers;
 [ApiController]
 public class UserController : ControllerBase
 {
+    /// <summary>
+    /// User service instance.
+    /// </summary>
     private readonly UserService _service;
-    private readonly ILogger<UserController> _logger;
-    public UserController(ILogger<UserController> logger, 
-        UserService service)
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="UserService"/> class.
+    /// </summary>
+    /// <param name="service">Provides user service instance.</param>
+    public UserController(UserService service)
     {
         _service = service.NotNull(nameof(service));
-        _logger = logger.NotNull(nameof(logger));
     }
 
+    /// <summary>
+    /// Get user.
+    /// </summary>
+    /// <param name="userId">User id.</param>
+    /// <returns>Get user response.</returns>
     [HttpGet("{userId}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> GetUser(long userId)
     {
@@ -34,8 +45,15 @@ public class UserController : ControllerBase
         return Ok(user);
     }
 
+    /// <summary>
+    /// Update user.
+    /// </summary>
+    /// <param name="userId">User id.</param>
+    /// <param name="updateUserRequest">Update user request.</param>
+    /// <returns>Updated user.</returns>
     [HttpPut("{userId}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> UpdateUser(long userId, UpdateUserRequest updateUserRequest)
     {
@@ -49,8 +67,14 @@ public class UserController : ControllerBase
         return Ok(updatedUser);
     }
 
+    /// <summary>
+    /// Delete user.
+    /// </summary>
+    /// <param name="userId">User id.</param>
+    /// <returns>Information if vehicle is deleted.</returns>
     [HttpDelete("{userId}")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> DeleteUser(long userId)
     {

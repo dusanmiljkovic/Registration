@@ -5,6 +5,10 @@ using Registration.Persistence.Repositories.Common;
 using System.Reflection;
 
 namespace Registration.Persistence;
+
+/// <summary>
+/// The <see cref="Module"/> used to register dependencies in the services layer.
+/// </summary>
 internal class PersistenceAutofacModule : Autofac.Module
 {
     /// <inheritdoc/>

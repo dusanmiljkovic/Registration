@@ -1,8 +1,17 @@
-﻿namespace Registration.Services.Users.Dto.Commands.UpdateUser
+﻿namespace Registration.Services.Users.Dto.Commands.UpdateUser;
+
+/// <summary>
+/// Defines layout of update user response.
+/// </summary>
+public class UpdateUserCommandResponse
 {
-    public class UpdateUserCommandResponse
-    {
-        public string Username { get; set; }
-        public string Email { get; set; }
-    }
+    /// <summary>
+    /// Username.
+    /// </summary>
+    public string Username { get; set; }
+
+    /// <summary>
+    /// Password.
+    /// </summary>
+    public string Email { get; set; }
 }

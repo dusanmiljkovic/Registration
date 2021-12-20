@@ -13,18 +13,28 @@ namespace Registration.Api.Controllers;
 [ApiController]
 public class RegistrationController : ControllerBase
 {
+    /// <summary>
+    /// Registration service instance.
+    /// </summary>
     private readonly RegistrationService _service;
-    private readonly ILogger<RegistrationController> _logger;
 
-    public RegistrationController(ILogger<RegistrationController> logger,
-        RegistrationService service)
+    /// <summary>
+    /// Initializes a new instance of the <see cref="RegistrationService"/> class.
+    /// </summary>
+    /// <param name="service">Provides race service instance.</param>
+    public RegistrationController(RegistrationService service)
     {
         _service = service.NotNull(nameof(service));
-        _logger = logger.NotNull(nameof(logger));
     }
 
+    /// <summary>
+    /// Register new user.
+    /// </summary>
+    /// <param name="registerRequest">Register new user request.</param>
+    /// <returns>Register user information.</returns>
     [HttpPost]
     [ProducesResponseType(StatusCodes.Status201Created)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> Register(RegisterRequest registerRequest)
     {
