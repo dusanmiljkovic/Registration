@@ -160,14 +160,13 @@ namespace Registration.Services.Tests
             _companyRepositoryMock.Setup(u => u.Find(It.IsAny<Expression<Func<Company, bool>>>())).Returns(new List<Company> { });
             
             _userRepositoryMock.Setup(u => u.Find(It.IsAny<Expression<Func<User, bool>>>())).Returns(new List<User> { });
+            _userRepositoryMock.Setup(u => u.Find(It.IsAny<Expression<Func<User, bool>>>(), It.IsAny<Expression<Func<User, object>>>())).Returns(new List<User> { _user });
             _userRepositoryMock.Setup(u => u.Update(_user)).Returns(_user);
-            _userRepositoryMock.Setup(u => u.GetById(_userId)).Returns(_user);
             _unitOfWorkMock.Setup(u => u.UserRepository).Returns(_userRepositoryMock.Object);
             _unitOfWorkMock.Setup(u => u.CompanyRepository).Returns(_companyRepositoryMock.Object);
 
             _unitOfWorkMock.Setup(u => u.SaveChangesAsync()).ReturnsAsync(1);
             _loggerMock.Setup(u => u.Information(It.IsAny<string>(), It.IsAny<long>()));
-            _loggerMock.Setup(u => u.Information(It.IsAny<string>(), It.IsAny<string>()));
 
             // ACT
             var response = classUnderTest.UpdateUserAsync(updateUserCommand);
@@ -194,7 +193,7 @@ namespace Registration.Services.Tests
             _unitOfWorkMock.Setup(u => u.UserRepository).Returns(_userRepositoryMock.Object);
 
             _userRepositoryMock.Setup(u => u.Find(It.IsAny<Expression<Func<User, bool>>>())).Returns(new List<User> { });
-            _userRepositoryMock.Setup(u => u.GetById(_nonexistentUser)).Returns<User>(null);
+            _userRepositoryMock.Setup(u => u.Find(It.IsAny<Expression<Func<User, bool>>>(), It.IsAny<Expression<Func<User, object>>>())).Returns(new List<User> { });
             _loggerMock.Setup(u => u.Error(It.IsAny<string>(), It.IsAny<long>()));
 
             // ACT AND ASSERT

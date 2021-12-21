@@ -59,13 +59,13 @@ public class UserService : BaseService, IUserService
     {
         Guard.ThrowIfNull(command, nameof(command));
 
-        var user = GetUserByUsernameOrEmailDifferentThanUserId(command.Username, command.Password, command.UserId);
+        var user = GetUserByUsernameOrEmailDifferentThanUserId(command.Username, command.Email, command.UserId);
         if (user is not null)
         {
             throw new UniqueException($"Email and password must be unique.");
         }
 
-        user = _unitOfWork.UserRepository.GetById(command.UserId);
+        user = _unitOfWork.UserRepository.Find(u => u.Id == command.UserId, u => u.Company).FirstOrDefault();
         if (user is null)
         {
             _logger.Error("User with ID \"{Id}\" was not found.", command.UserId);
@@ -74,16 +74,21 @@ public class UserService : BaseService, IUserService
 
         user.Update(command.Username, command.Password, command.Email);
 
+        //da li firma je neka druga firma
         var company = GetCompanyByNameDifferentThanCompanyId(command.CompanyName, user.CompanyId);
         if (company is not null)
         {
+            //adko je druga firma uzmi njen ID
             user.UpdateCompany(company.Id);
         }
         else
         {
-            company = new Company(command.CompanyName);
-            user.UpdateCompany(company);
-            _logger.Information("Creating new company with name {Name}.", company.Name);
+            if (!user.Company.Name.Equals(command.CompanyName))
+            {
+                company = new Company(command.CompanyName);
+                user.UpdateCompany(company);
+                _logger.Information("Creating new company with name {Name}.", company.Name);
+            }
         }
 
         _unitOfWork.UserRepository.Update(user);
@@ -95,7 +100,7 @@ public class UserService : BaseService, IUserService
             UserId = user.Id,
             Username = user.Username,
             Email = user.Email,
-            CompanyName = company.Name
+            CompanyName = user.Company.Name
         };
     }
 
