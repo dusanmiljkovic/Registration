@@ -3,7 +3,6 @@
 The goal of this project is implement DDD principles with .NET Core 6.0.
 
 ## Model
-Model consists of two entites: User and Company.
 
 ### Data model entities
 There are two entities: 
