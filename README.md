@@ -23,7 +23,7 @@ Choose database provider in Registration.Api/appsettings.json by setting appropr
 - *InMemoryDbConnection* value for in-memory database
 - *SqlServerDbConnection* value for Microsoft SQL Server
 - *PostgreSqlDbConnection* value for PostgreSQL
-> **Note:** It's possible that connection string needs to be changed to so it is in compliance with your environment.
+> **Note:** It's possible that connection string needs to be changed too so it is in compliance with your environment.
 
 ### Entity configuration
 Every entity has its own EF configuration class that implements `IEntityTypeConfiguration<TEntity>` interface. Configuration classes have the same name as corresponding entity with *Configuration* suffix, e.g. `UserConfiguration`, `CompanyConfiguration`.
