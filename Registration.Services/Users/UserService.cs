@@ -74,8 +74,6 @@ public class UserService : BaseService, IUserService
 
         user.Update(command.Username, command.Password, command.Email);
 
-        bool checkIfCompanyHasNoUser = false;
-
         var company = GetCompanyByNameDifferentThanCompanyId(command.CompanyName, user.CompanyId);
         if (company is not null)
         {
@@ -83,7 +81,6 @@ public class UserService : BaseService, IUserService
         }
         else
         {
-            checkIfCompanyHasNoUser = true;
             company = new Company(command.CompanyName);
             user.UpdateCompany(company);
             _logger.Information("Creating new company with name {Name}.", company.Name);

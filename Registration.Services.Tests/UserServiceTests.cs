@@ -40,13 +40,12 @@ namespace Registration.Services.Tests
             _userRepositoryMock = new Mock<IUserRepository>(MockBehavior.Strict);
             _companyRepositoryMock = new Mock<ICompanyRepository>(MockBehavior.Strict);
 
-            _unitOfWorkMock.Setup(u => u.UserRepository).Returns(_userRepositoryMock.Object);
-            _unitOfWorkMock.Setup(u => u.CompanyRepository).Returns(_companyRepositoryMock.Object);
-
+            
             _user = new(_username, _password, _email);
             _company = new(_companyName);
             _user.CompanyId = _companyId;
             _user.Id = _userId;
+            _user.Company = _company;
             _company.Id = _companyId;
 
             classUnderTest = new(_loggerMock.Object, _unitOfWorkMock.Object);
@@ -59,6 +58,8 @@ namespace Registration.Services.Tests
             // ACT and ASSERT
             Assert.Throws<ArgumentNullException>(() => new UserService(null, _unitOfWorkMock.Object));
             Assert.Throws<ArgumentNullException>(() => new UserService(_loggerMock.Object, null));
+
+            VerifyAll();
         }
 
         [Test]
@@ -66,6 +67,8 @@ namespace Registration.Services.Tests
         {
             // ACT and ASSERT
             Assert.ThrowsAsync<ArgumentNullException>(async () => await classUnderTest.GetUserAsync(null));
+
+            VerifyAll();
         }
 
         [Test]
@@ -73,8 +76,9 @@ namespace Registration.Services.Tests
         {
             // ARRANGE
             GetUserCommand getUserCommand = new() { UserId = _userId };
-            _userRepositoryMock.Setup(u => u.GetById(_userId)).Returns(_user);
-            _companyRepositoryMock.Setup(c => c.GetById(_user.CompanyId)).Returns(_company);
+
+            _unitOfWorkMock.Setup(u => u.UserRepository).Returns(_userRepositoryMock.Object);
+            _userRepositoryMock.Setup(u => u.Find(It.IsAny<Expression<Func<User, bool>>>(), It.IsAny<Expression<Func<User, object>>>())).Returns(new List<User> { _user });
 
             // ACT
             var response = classUnderTest.GetUserAsync(getUserCommand);
@@ -94,12 +98,17 @@ namespace Registration.Services.Tests
         {
             // ARRANGE
             GetUserCommand getUserCommand = new() { UserId = _nonexistentUser };
-            _userRepositoryMock.Setup(u => u.GetById(_nonexistentUser)).Returns<User>(null);
+
+            _unitOfWorkMock.Setup(u => u.UserRepository).Returns(_userRepositoryMock.Object);
+            _userRepositoryMock.Setup(u => u.Find(It.IsAny<Expression<Func<User, bool>>>(), It.IsAny<Expression<Func<User, object>>>())).Returns(new List<User> { });
+
             _loggerMock.Setup(u => u.Error(It.IsAny<string>(), It.IsAny<long>()));
 
             // ACT AND ASSERT
             var ex = Assert.ThrowsAsync<Exceptions.NotFoundException>(() => classUnderTest.GetUserAsync(getUserCommand));
             Assert.That(ex.Message, Is.EqualTo($"User with ID \"{getUserCommand.UserId}\" was not found."));
+
+            VerifyAll();
         }
 
 
@@ -108,10 +117,12 @@ namespace Registration.Services.Tests
         {
             // ACT and ASSERT
             Assert.ThrowsAsync<ArgumentNullException>(async () => await classUnderTest.UpdateUserAsync(null));
+
+            VerifyAll();
         }
 
         [Test]
-        public void RegisterUser_ShouldThrowException_WhenUserUsernameOrEmailAlreadyExists()
+        public void UpdateUser_ShouldThrowException_WhenUserUsernameOrEmailAlreadyExists()
         {
             UpdateUserCommand updateUserCommand = new()
             {
@@ -120,14 +131,17 @@ namespace Registration.Services.Tests
                 Password = _password,
                 Username = _username
             };
+
+            _unitOfWorkMock.Setup(u => u.UserRepository).Returns(_userRepositoryMock.Object);
             _userRepositoryMock.Setup(u => u.Find(It.IsAny<Expression<Func<User, bool>>>())).Returns(new List<User> { _user });
-            _loggerMock.Setup(u => u.Information(It.IsAny<string>()));
 
             // ACT
             var ex = Assert.ThrowsAsync<UniqueException>(async () => await classUnderTest.UpdateUserAsync(updateUserCommand));
 
             // ASSERT
             Assert.That(ex.Message, Is.EqualTo("Email and password must be unique."), "Exception message is not correct.");
+
+            VerifyAll();
         }
 
         [Test]
@@ -139,20 +153,22 @@ namespace Registration.Services.Tests
                 UserId = _userId,
                 Email = _email,
                 Password = _password,
-                Username = _username
+                Username = _username,
+                CompanyName = _companyName
             };
 
             _companyRepositoryMock.Setup(u => u.Find(It.IsAny<Expression<Func<Company, bool>>>())).Returns(new List<Company> { });
-            _companyRepositoryMock.Setup(u => u.Update(_company)).Returns(_company);
-            _companyRepositoryMock.Setup(u => u.GetById(_companyId)).Returns(_company);
             
             _userRepositoryMock.Setup(u => u.Find(It.IsAny<Expression<Func<User, bool>>>())).Returns(new List<User> { });
             _userRepositoryMock.Setup(u => u.Update(_user)).Returns(_user);
             _userRepositoryMock.Setup(u => u.GetById(_userId)).Returns(_user);
+            _unitOfWorkMock.Setup(u => u.UserRepository).Returns(_userRepositoryMock.Object);
+            _unitOfWorkMock.Setup(u => u.CompanyRepository).Returns(_companyRepositoryMock.Object);
 
             _unitOfWorkMock.Setup(u => u.SaveChangesAsync()).ReturnsAsync(1);
             _loggerMock.Setup(u => u.Information(It.IsAny<string>(), It.IsAny<long>()));
-            
+            _loggerMock.Setup(u => u.Information(It.IsAny<string>(), It.IsAny<string>()));
+
             // ACT
             var response = classUnderTest.UpdateUserAsync(updateUserCommand);
 
@@ -160,6 +176,8 @@ namespace Registration.Services.Tests
             Assert.IsNotNull(response);
             Assert.AreEqual(_username, response.Result.Username);
             Assert.AreEqual(_email, response.Result.Email);
+
+            VerifyAll();
         }
 
         [Test]
@@ -173,6 +191,8 @@ namespace Registration.Services.Tests
                 Password = _password,
                 Username = _username
             };
+            _unitOfWorkMock.Setup(u => u.UserRepository).Returns(_userRepositoryMock.Object);
+
             _userRepositoryMock.Setup(u => u.Find(It.IsAny<Expression<Func<User, bool>>>())).Returns(new List<User> { });
             _userRepositoryMock.Setup(u => u.GetById(_nonexistentUser)).Returns<User>(null);
             _loggerMock.Setup(u => u.Error(It.IsAny<string>(), It.IsAny<long>()));
@@ -180,6 +200,8 @@ namespace Registration.Services.Tests
             // ACT AND ASSERT
             var ex = Assert.ThrowsAsync<Exceptions.NotFoundException>(() => classUnderTest.UpdateUserAsync(updateUserCommand));
             Assert.That(ex.Message, Is.EqualTo($"User with ID \"{updateUserCommand.UserId}\" was not found."));
+
+            VerifyAll();
         }
 
         [Test]
@@ -187,6 +209,8 @@ namespace Registration.Services.Tests
         {
             // ACT and ASSERT
             Assert.ThrowsAsync<ArgumentNullException>(async () => await classUnderTest.DeleteUserAsync(null));
+
+            VerifyAll();
         }
 
         [Test]
@@ -194,17 +218,22 @@ namespace Registration.Services.Tests
         {
             // ARRANGE
             DeleteUserCommand deleteUserCommand = new() { UserId = _userId };
-            _userRepositoryMock.Setup(u => u.RemoveById(_userId));
-            _unitOfWorkMock.Setup(u => u.SaveChangesAsync()).ReturnsAsync(1);
-            _loggerMock.Setup(u => u.Information(It.IsAny<string>(), It.IsAny<long>()));
+            _unitOfWorkMock.Setup(u => u.UserRepository).Returns(_userRepositoryMock.Object);
+
             _userRepositoryMock.Setup(u => u.GetById(_userId)).Returns(_user);
+            _userRepositoryMock.Setup(u => u.RemoveById(_userId));
             _userRepositoryMock.Setup(u => u.Find(It.IsAny<Expression<Func<User, bool>>>())).Returns(new List<User> { });
+
+            _loggerMock.Setup(u => u.Information(It.IsAny<string>(), It.IsAny<long>()));
+            _unitOfWorkMock.Setup(u => u.SaveChangesAsync()).ReturnsAsync(1);
 
             // ACT
             var response = classUnderTest.DeleteUserAsync(deleteUserCommand);
 
             // ASSERT
             Assert.IsNotNull(response);
+
+            VerifyAll();
         }
 
         [Test]
@@ -219,12 +248,16 @@ namespace Registration.Services.Tests
             _userRepositoryMock.Setup(u => u.Find(It.IsAny<Expression<Func<User, bool>>>())).Returns(new List<User> { _user });
             _unitOfWorkMock.Setup(u => u.CompanyRepository).Returns(_companyRepositoryMock.Object);
             _companyRepositoryMock.Setup(u => u.RemoveById(_user.CompanyId));
+            _unitOfWorkMock.Setup(u => u.UserRepository).Returns(_userRepositoryMock.Object);
+            _unitOfWorkMock.Setup(u => u.CompanyRepository).Returns(_companyRepositoryMock.Object);
 
             // ACT
             var response = classUnderTest.DeleteUserAsync(deleteUserCommand);
 
             // ASSERT
             Assert.IsNotNull(response);
+
+            VerifyAll();
         }
 
         [Test]
@@ -232,12 +265,15 @@ namespace Registration.Services.Tests
         {
             // ARRANGE
             DeleteUserCommand deleteUserCommand = new() { UserId = _nonexistentUser };
+            _unitOfWorkMock.Setup(u => u.UserRepository).Returns(_userRepositoryMock.Object);
             _userRepositoryMock.Setup(u => u.GetById(_nonexistentUser)).Returns<User>(null);
             _loggerMock.Setup(u => u.Error(It.IsAny<string>(), It.IsAny<long>()));
 
             // ACT AND ASSERT
             var ex = Assert.ThrowsAsync<Exceptions.NotFoundException>(() => classUnderTest.DeleteUserAsync(deleteUserCommand));
             Assert.That(ex.Message, Is.EqualTo($"User with ID \"{deleteUserCommand.UserId}\" was not found."));
+
+            VerifyAll();
         }
 
         private void VerifyAll()
