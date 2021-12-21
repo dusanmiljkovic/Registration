@@ -1,5 +1,7 @@
-﻿using Registration.Domain.Base;
+﻿using Microsoft.AspNetCore.Cryptography.KeyDerivation;
+using Registration.Domain.Base;
 using Registration.Domain.Entities.Companies;
+using System.Security.Cryptography;
 
 namespace Registration.Domain.Entities.Users;
 
@@ -35,8 +37,30 @@ public partial class User : IAggregateRoot
         string email)
     {
         Username = username;
-        Password = password;
+        UpdatePassword(password);
         Email = email;
+    }
+
+    /// <summary>
+    /// Update password.
+    /// </summary>
+    /// <param name="password">Password.</param>
+    public void UpdatePassword(string password)
+    {
+
+        byte[] salt = new byte[128 / 8];
+        using(var rng = new RNGCryptoServiceProvider())
+        {
+            rng.GetNonZeroBytes(salt);
+        }
+
+        string hashed = Convert.ToBase64String(KeyDerivation.Pbkdf2(
+            password: password,
+            salt: salt,
+            prf: KeyDerivationPrf.HMACSHA256,
+            iterationCount: 100000,
+            numBytesRequested: 256 / 8));
+        Password = hashed;
     }
 
     /// <summary>
