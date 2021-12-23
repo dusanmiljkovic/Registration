@@ -1,6 +1,6 @@
 # Registration projet
 
-The goal of this project is implement DDD principles with .NET Core 6.0.
+The goal of this project is to implement DDD principles with .NET Core 6.0.
 
 ## Model
 
@@ -29,7 +29,7 @@ Choose database provider in Registration.Api/appsettings.json by setting appropr
 Every entity has its own EF configuration class that implements `IEntityTypeConfiguration<TEntity>` interface. Configuration classes have the same name as corresponding entity with *Configuration* suffix, e.g. `UserConfiguration`, `CompanyConfiguration`.
 
 ### Migrations
-When switching between MySQL and PostgreSQL database it's neccessary to remove migrations and generate new ones based on the database engine you want to working with.
+When switching between MySQL and PostgreSQL database it's neccessary to remove migrations and generate new ones based on the database engine you want to work with.
 
 
 ## Technologies implemented:
